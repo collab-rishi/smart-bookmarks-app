@@ -1,25 +1,33 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
 export default function BookmarkList({ bookmarks, userId, onAdd, onRemove }: any) {
   const supabase = createClient()
 
-  useEffect(() => {
-    const channel = supabase.channel('realtime_bookmarks')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'bookmarks', 
-        filter: `user_id=eq.${userId}` 
-      }, (payload) => {
-        if (payload.eventType === 'INSERT') onAdd(payload.new)
-        if (payload.eventType === 'DELETE') onRemove(payload.old.id)
-      }).subscribe()
+const onAddRef = useRef(onAdd);
+const onRemoveRef = useRef(onRemove);
 
-    return () => { supabase.removeChannel(channel) }
-  }, [userId, onAdd, onRemove])
+useEffect(() => {
+ 
+  if (!userId) return;
+
+  const channel = supabase.channel('realtime_bookmarks')
+    .on('postgres_changes', { 
+      event: '*', 
+      schema: 'public', 
+      table: 'bookmarks', 
+      filter: `user_id=eq.${userId}` 
+    }, (payload) => {
+      
+      
+      if (payload.eventType === 'INSERT') onAddRef.current(payload.new)
+      if (payload.eventType === 'DELETE') onRemoveRef.current(payload.old.id)
+    }).subscribe()
+
+  return () => { supabase.removeChannel(channel) }
+}, [userId])
 
   const deleteBookmark = async (id: string) => {
     onRemove(id)

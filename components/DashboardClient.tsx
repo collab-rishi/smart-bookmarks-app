@@ -1,21 +1,32 @@
 'use client'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import BookmarkForm from './BookmarkForm'
 import BookmarkList from './BookmarkList'
 
 export default function DashboardClient({ initialBookmarks, user }: any) {
   const [bookmarks, setBookmarks] = useState(initialBookmarks)
 
-  const addBookmark = (newB: any) => {
-    setBookmarks((prev: any) => prev.find((b: any) => b.id === newB.id) ? prev : [newB, ...prev])
-  }
-  const removeBookmark = (id: string) => {
-    setBookmarks((prev: any) => prev.filter((b: any) => b.id !== id))
-  }
+  
+  const addBookmark = useCallback((newB: any) => {
+    setBookmarks((prev: any) => {
+      
+      const exists = prev.some((b: any) => b.id === newB.id)
+      if (exists) return prev
+      
+      
+      return [newB, ...prev]
+    })
+  }, [])
+
+  const removeBookmark = useCallback((id: string) => {
+    setBookmarks((prev: any) => {
+     
+      return prev.filter((b: any) => b.id !== id)
+    })
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#fafafa] selection:bg-gray-200">
-      {/* Subtle Top Utility Bar */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 z-10">
         <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -48,7 +59,6 @@ export default function DashboardClient({ initialBookmarks, user }: any) {
         </header>
 
         <section className="mb-12">
-          {/* Label for the input section adds to the "structured" feel */}
           <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 block">
             Add New Entry
           </label>

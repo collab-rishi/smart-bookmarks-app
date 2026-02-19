@@ -18,7 +18,7 @@ export default function BookmarkForm({ user, onAdd }: any) {
       .from('bookmarks')
       .insert([{ 
         url, 
-        title, // Now using the user-provided title
+        title, 
         user_id: user.id 
       }])
       .select().single()
@@ -34,7 +34,7 @@ export default function BookmarkForm({ user, onAdd }: any) {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex flex-col md:flex-row items-stretch gap-2 p-1.5 bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-gray-400 transition-all">
-        {/* Name/Title Input */}
+        
         <input
           type="text"
           value={title}
@@ -44,7 +44,7 @@ export default function BookmarkForm({ user, onAdd }: any) {
           required
         />
         
-        {/* URL Input */}
+        
         <input
           type="url"
           value={url}

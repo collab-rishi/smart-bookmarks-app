@@ -38,17 +38,17 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // This refreshes the session if it's expired - critical for security!
+  
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protected route logic
+ 
   if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from landing to dashboard
+  
   if (user && request.nextUrl.pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
